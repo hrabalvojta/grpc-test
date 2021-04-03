@@ -1,11 +1,20 @@
 generate:
 	buf generate
 
+run: generate
+	go run main.go
+
+build: generate
+	go build -o "bin/grpc-server" main.go
+
+test: 
+	go test
+
 lint:
 	buf lint
 	buf breaking --against 'https://github.com/johanbrandhorst/grpc-gateway-boilerplate.git#branch=master'
 
-BUF_VERSION:=0.40.0
+BUF_VERSION:=0.41.0
 
 install:
 	go install \

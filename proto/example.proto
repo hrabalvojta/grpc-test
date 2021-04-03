@@ -7,17 +7,28 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 
 // Defines the import path that should be used to import the generated package,
 // and the package name.
-option go_package = "github.com/johanbrandhorst/grpc-gateway-boilerplate/proto;example";
+option go_package = "github.com/hrabalvojta/grpc-test/proto;example";
 
 // These annotations are used when generating the OpenAPI file.
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
+    title: "gRPC test app";
+    description: "This is a sample API server.";
+    contact: {
+      name: "Vojtech Hrabal";
+      url: "http://www.hrabalvojta.com/support";
+      email: "support@hrabalvojta.com"
+    },
+    license: {
+      name: "Apache 2.0";
+      url: "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
     version: "1.0";
   };
   external_docs: {
-    url: "https://github.com/johanbrandhorst/grpc-gateway-boilerplate";
-    description: "gRPC-gateway boilerplate repository";
-  }
+    url: "https://github.com/hrabalvojta/grpc-test";
+    description: "gRPC-gateway test project";
+  };
   schemes: HTTPS;
 };
 
@@ -34,6 +45,17 @@ service UserService {
       tags: "Users"
     };
   }
+  rpc GetUser(GetUserRequest) returns (User) {
+    option (google.api.http) = {
+      // Route to this method from GET requests to /api/v1/users/{id}
+      get: "/api/v1/users/{id}"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get a user by their ID"
+      description: "Gets a user from the server."
+      tags: "Users"
+    };
+  }
   rpc ListUsers(ListUsersRequest) returns (stream User) {
     option (google.api.http) = {
       // Route to this method from GET requests to /api/v1/users
@@ -47,10 +69,17 @@ service UserService {
   }
 }
 
-message AddUserRequest {}
+message AddUserRequest {
+  string email = 1;
+}
+
+message GetUserRequest {
+  string id = 1;
+}
 
 message ListUsersRequest {}
 
 message User {
   string id = 1;
+  string email = 2;
 }

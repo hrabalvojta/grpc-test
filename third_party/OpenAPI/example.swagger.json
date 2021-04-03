@@ -1,8 +1,18 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "example.proto",
-    "version": "1.0"
+    "title": "gRPC test app",
+    "description": "This is a sample API server.",
+    "version": "1.0",
+    "contact": {
+      "name": "Vojtech Hrabal",
+      "url": "http://www.hrabalvojta.com/support",
+      "email": "support@hrabalvojta.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
   },
   "tags": [
     {
@@ -83,16 +93,56 @@
           "Users"
         ]
       }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "summary": "Get a user by their ID",
+        "description": "Gets a user from the server.",
+        "operationId": "UserService_GetUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/exampleUser"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
     }
   },
   "definitions": {
     "exampleAddUserRequest": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      }
     },
     "exampleUser": {
       "type": "object",
       "properties": {
         "id": {
+          "type": "string"
+        },
+        "email": {
           "type": "string"
         }
       }
@@ -129,7 +179,7 @@
     }
   },
   "externalDocs": {
-    "description": "gRPC-gateway boilerplate repository",
-    "url": "https://github.com/johanbrandhorst/grpc-gateway-boilerplate"
+    "description": "gRPC-gateway test project",
+    "url": "https://github.com/hrabalvojta/grpc-test"
   }
 }

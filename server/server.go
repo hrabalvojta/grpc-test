@@ -5,8 +5,10 @@ import (
 	"sync"
 
 	"github.com/gofrs/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
-	pbExample "github.com/johanbrandhorst/grpc-gateway-boilerplate/proto"
+	pbExample "github.com/hrabalvojta/grpc-test/proto"
 )
 
 // Backend implements the protobuf interface
@@ -23,16 +25,31 @@ func New() *Backend {
 }
 
 // AddUser adds a user to the in-memory store.
-func (b *Backend) AddUser(ctx context.Context, _ *pbExample.AddUserRequest) (*pbExample.User, error) {
+func (b *Backend) AddUser(ctx context.Context, req *pbExample.AddUserRequest) (*pbExample.User, error) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 
 	user := &pbExample.User{
-		Id: uuid.Must(uuid.NewV4()).String(),
+		Id:    uuid.Must(uuid.NewV4()).String(),
+		Email: req.GetEmail(),
 	}
 	b.users = append(b.users, user)
 
 	return user, nil
+}
+
+// AddUser adds a user to the in-memory store.
+func (b *Backend) GetUser(ctx context.Context, req *pbExample.GetUserRequest) (*pbExample.User, error) {
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	for _, user := range b.users {
+		if user.Id == req.GetId() {
+			return user, nil
+		}
+	}
+
+	return nil, status.Errorf(codes.NotFound, "user with ID %q could not be found", req.GetId())
 }
 
 // ListUsers lists all users in the store.
