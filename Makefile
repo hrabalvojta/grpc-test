@@ -14,6 +14,13 @@ lint:
 	buf lint
 	buf breaking --against 'https://github.com/johanbrandhorst/grpc-gateway-boilerplate.git#branch=master'
 
+dbuild: generate
+	docker build -t vhrabal/grpc-test:latest .
+	docker image prune -f
+
+drun: dbuild
+	docker run --rm --name grpc_test -p10000:10000 -p11000:11000 -d vhrabal/grpc-test:latest
+	
 BUF_VERSION:=0.41.0
 
 install:
