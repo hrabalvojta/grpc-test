@@ -34,7 +34,7 @@ func getOpenAPIHandler() http.Handler {
 }
 
 // Run runs the gRPC-Gateway, dialling the provided address.
-func Run(dialAddr string) error {
+func Run(dialAddr string, swaggerAddr string) error {
 	// Adds gRPC internal logs. This is quite verbose, so adjust as desired!
 	log := grpclog.NewLoggerV2(os.Stdout, ioutil.Discard, ioutil.Discard)
 	grpclog.SetLoggerV2(log)
@@ -48,24 +48,19 @@ func Run(dialAddr string) error {
 		grpc.WithBlock(),
 	)
 	if err != nil {
-		return fmt.Errorf("failed to dial server: %w", err)
+		return fmt.Errorf("[gateway] failed to dial server: %w", err)
 	}
 
 	gwmux := runtime.NewServeMux()
 	err = pbExample.RegisterUserServiceHandler(context.Background(), gwmux, conn)
 	if err != nil {
-		return fmt.Errorf("failed to register gateway: %w", err)
+		return fmt.Errorf("[gateway] failed to register gateway: %w", err)
 	}
 
 	oa := getOpenAPIHandler()
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "11000"
-	}
-	gatewayAddr := "0.0.0.0:" + port
 	gwServer := &http.Server{
-		Addr: gatewayAddr,
+		Addr: swaggerAddr,
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if strings.HasPrefix(r.URL.Path, "/api") {
 				gwmux.ServeHTTP(w, r)
@@ -76,13 +71,13 @@ func Run(dialAddr string) error {
 	}
 	// Empty parameters mean use the TLS Config specified with the server.
 	if strings.ToLower(os.Getenv("SERVE_HTTP")) == "true" {
-		log.Info("Serving gRPC-Gateway and OpenAPI Documentation on http://", gatewayAddr)
-		return fmt.Errorf("serving gRPC-Gateway server: %w", gwServer.ListenAndServe())
+		log.Info("[gateway] Serving gRPC-Gateway and OpenAPI Documentation on http://", swaggerAddr)
+		return fmt.Errorf("[gateway] serving gRPC-Gateway server: %w", gwServer.ListenAndServe())
 	}
 
 	gwServer.TLSConfig = &tls.Config{
 		Certificates: []tls.Certificate{insecure.Cert},
 	}
-	log.Info("Serving gRPC-Gateway and OpenAPI Documentation on https://", gatewayAddr)
-	return fmt.Errorf("serving gRPC-Gateway server: %w", gwServer.ListenAndServeTLS("", ""))
+	log.Info("[gateway] Serving gRPC-Gateway and OpenAPI Documentation on https://", swaggerAddr)
+	return fmt.Errorf("[gateway] serving gRPC-Gateway server: %w", gwServer.ListenAndServeTLS("", ""))
 }
