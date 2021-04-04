@@ -18,7 +18,12 @@ dbuild: generate
 	docker build -t vhrabal/grpc-test:latest .
 	docker image prune -f
 
+PG_PASSWORD:=secret
+#PGPASSWORD="secret" psql -h localhost -U postgres -d dvdrental
+
 drun: dbuild
+	docker run --rm --name grpc_postgres -e POSTGRES_PASSWORD=${PG_PASSWORD} -e POSTGRES_DB=dvdrental -p5432:5432 -d postgres:alpine
+	PGPASSWORD=${PG_PASSWORD} pg_restore -U postgres -h localhost -d dvdrental ~/Projects/go/grpc-test/sql/dvdrental.tar
 	docker run --rm --name grpc_test -p10000:10000 -p11000:11000 -d vhrabal/grpc-test:latest
 	
 BUF_VERSION:=0.41.0
