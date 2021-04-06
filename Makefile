@@ -6,6 +6,7 @@ run: generate
 
 build: generate
 	go build -o "bin/grpc-server" main.go
+	./bin/grpc-server -grpc-addr "127.0.0.1:10000" -swagger-addr "127.0.0.1:11000" -pg-addr "127.0.0.1:5432" -pg-db "dvdrental" -pg-user "postgres" -pg-password "secret"
 
 test: 
 	go test
