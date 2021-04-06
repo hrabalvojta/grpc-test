@@ -1,5 +1,5 @@
 version: v1beta1
-name: buf.build/johan/grpc-gateway-boilerplate
+name: buf.build/hrabalvojta/grpc-test
 build:
   roots:
     - proto
