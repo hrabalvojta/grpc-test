@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net"
 	"os"
 
@@ -19,12 +20,12 @@ import (
 
 // Command line defaults
 const (
-	DefaultgRPCAddr           = "127.0.0.1:10000"
-	DefaultSwaggerAddr        = "127.0.0.1:11000"
-	DefaultPostgreSQLAddr     = "127.0.0.1:5432"
-	DefaultPostgreSQLDB       = "dvdrental"
-	DefaultPostgreSQLUser     = "postgres"
-	DefaultPostgreSQLPassword = "secret"
+	DefaultgRPCAddr    = "127.0.0.1:10000"
+	DefaultSwaggerAddr = "127.0.0.1:11000"
+	DefaultPGAddr      = "127.0.0.1:5432"
+	DefaultPGDB        = "dvdrental"
+	DefaultPGUser      = "postgres"
+	DefaultPGPassword  = "secret"
 )
 
 // Command line parameters
@@ -38,10 +39,10 @@ var pgPassword string
 func init() {
 	flag.StringVar(&gRPCAddr, "grpc-addr", DefaultgRPCAddr, "Set the gRPC bind address")
 	flag.StringVar(&swaggerAddr, "swagger-addr", DefaultSwaggerAddr, "Set the gRPC bind address")
-	flag.StringVar(&pgAddr, "pg-addr", DefaultPostgreSQLAddr, "Set PostgreSQL address")
-	flag.StringVar(&pgDB, "pg-db", DefaultPostgreSQLDB, "Set PostgreSQL database")
-	flag.StringVar(&pgUser, "pg-user", DefaultPostgreSQLUser, "Set PostgreSQL user")
-	flag.StringVar(&pgPassword, "pg-password", DefaultPostgreSQLPassword, "Set PostgreSQL password")
+	flag.StringVar(&pgAddr, "pg-addr", DefaultPGAddr, "Set PostgreSQL address")
+	flag.StringVar(&pgDB, "pg-db", DefaultPGDB, "Set PostgreSQL database")
+	flag.StringVar(&pgUser, "pg-user", DefaultPGUser, "Set PostgreSQL user")
+	flag.StringVar(&pgPassword, "pg-password", DefaultPGPassword, "Set PostgreSQL password")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n", os.Args[0])
 		flag.PrintDefaults()
@@ -49,6 +50,13 @@ func init() {
 }
 
 func main() {
+	flag.Parse()
+	flag.Usage()
+	log.SetFlags(log.LstdFlags)
+
+	// PG database_url
+	//var pgDbUrl string = "postgres://" + pgUser + ":" + pgPassword + "@" + pgAddr + "/" + pgDB
+
 	// Adds gRPC internal logs. This is quite verbose, so adjust as desired!
 	log := grpclog.NewLoggerV2(os.Stdout, ioutil.Discard, ioutil.Discard)
 	grpclog.SetLoggerV2(log)
