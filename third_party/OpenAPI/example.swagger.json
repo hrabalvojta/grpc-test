@@ -118,7 +118,8 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "integer",
+            "format": "int32"
           }
         ],
         "tags": [
@@ -170,15 +171,16 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
+          "type": "integer",
+          "format": "int32"
         },
         "firstName": {
           "type": "string"
         },
         "lastName": {
+          "type": "string"
+        },
+        "email": {
           "type": "string"
         }
       }
